@@ -1,23 +1,24 @@
 //variable to check if the web app is being run from a localhost server
 // or local development environment
 
-import e from "cors";
 
 const islocalHost = Boolean(
     window.location.hostname === 'localhost' || window.location.hostname === '[::1]' || window.location.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
     //localhost or ipv6 or ipv4
 );
 
-
+// Registers the service worker for the web app
 export async function register(config) {
+    // Checks if it's in production and service worker is supported
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+        // Gets the public URL and checks if it matches the origin
         const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
 
         if (publicUrl.origin !== window.location.origin) {
             return;
         }
 
-
+        // Waits for the window 'load' event before continuing
         const loadEventListener = () => {
             return new Promise((resolve) => {
                 window.addEventListener('load', resolve);
@@ -26,12 +27,14 @@ export async function register(config) {
 
         await loadEventListener();
 
-
+        // Service worker URL
         const swUrl = `${process.env.PUBLIC_URL}/serviceWorker.js`;
 
+         // Checks if running on localhost or not
         if (islocalHost) {
             checkValidServiceWorker(swUrl, config);
 
+            // Waits for service worker to be ready and logs a message
             await navigator.serviceWorker.ready;
                   console.log(
                     'This web app is being served cache-first by a service ' +
@@ -49,7 +52,7 @@ export async function register(config) {
 
 
 
-
+// Registers a valid service worker
 async function registerValidSW(swUrl, config){
     try {   
         const registration = await navigator.serviceWorker.register(swUrl);
@@ -82,6 +85,7 @@ async function registerValidSW(swUrl, config){
     }
 }
 
+// Checks if the service worker is valid
 async function checkValidServiceWorker(swUrl, config) {
     try {
         const response = await fetch(swUrl);
@@ -100,6 +104,8 @@ async function checkValidServiceWorker(swUrl, config) {
         console.log('No internet connection found. App is running in offline mode.');
     }   
 }
+
+// Unregisters the service worker
 
 export async function unregister() { 
     if ('serviceWorker' in navigator) {
