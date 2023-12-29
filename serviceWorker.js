@@ -70,3 +70,10 @@ async function checkValidServiceWorker(swUrl, config) {
         console.log('No internet connection found. App is running in offline mode.');
     }   
 }
+
+export async function unregister() { 
+    if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.unregister();
+    }
+}
