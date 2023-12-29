@@ -42,3 +42,31 @@ export async function register(config) {
     }   
 }
 
+
+
+
+
+
+
+registerValidSW(){
+
+}
+
+async function checkValidServiceWorker(swUrl, config) {
+    try {
+        const response = await fetch(swUrl);
+        const contentType = response.headers.get('content-type');
+
+        if (response.status === 404 || (contentType != null && contentType.indexOf('javascript') === -1)) {
+            //service worker not found so unregister the existing worker and reload page
+            const registration = await navigator.serviceWorker.ready;
+            await registration.unregister();
+            window.location.reload();
+        } else {
+            //service worker found
+            registerValidSW(swUrl, config);
+        }
+    }catch(error){
+        console.log('No internet connection found. App is running in offline mode.');
+    }   
+}
